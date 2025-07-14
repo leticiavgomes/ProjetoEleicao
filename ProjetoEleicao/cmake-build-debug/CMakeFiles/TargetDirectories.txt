@@ -1,0 +1,3 @@
+C:/Users/Alunos/Downloads/ProjetoEleicao/cmake-build-debug/CMakeFiles/ProjetoEleicao.dir
+C:/Users/Alunos/Downloads/ProjetoEleicao/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/Alunos/Downloads/ProjetoEleicao/cmake-build-debug/CMakeFiles/rebuild_cache.dir
