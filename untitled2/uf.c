@@ -10,13 +10,14 @@
 
 void excluir(FILE *f, struct UF **ufs) {
     int cod;
-    printf("digite o que quer excluir: ");
+    int excluidos_uf = 0;
     fflush(stdin);
     scanf("%d", &cod);
     strcpy(ufs[cod]->sigla, "--");
     strcpy(ufs[cod]->descricao, "EXCLUIDO");
     fseek(f, cod*sizeof(struct UF), SEEK_SET);
     fwrite(ufs[cod], sizeof(struct UF), 1, f);
+    para_ram(f,ufs);
     fflush(f);
 }
 void editar(FILE *f, struct UF **ufs, int total) {
@@ -54,7 +55,7 @@ struct UF **buscar_por_codigo(struct UF **ufs, int total, int codigo) {
             printf("Codigo: %d \n", ufs[i]->codigo);
             printf("Sigla: %s \n", ufs[i]->sigla);
             printf("Descricao: %s \n", ufs[i]->descricao);
-            return ufs;
+            return ufs[i];
         }
 
             return NULL;
@@ -65,7 +66,7 @@ struct UF **buscar_por_codigo(struct UF **ufs, int total, int codigo) {
 
 int conferir(char *c, int max) {
     if (c[0]=='\0') {
-        printf("digite ! \n");
+        printf("digite algo! \n");
         return 0;
     }
     if (strlen(c)>max) {
@@ -94,8 +95,9 @@ int comparar_char(char *c, struct UF **ufs, int total) {
         }
     }
     return 1;
-
 }
+
+
 FILE *abrir_arquivo(char path[]) {
     FILE *f;
     f = fopen(path, "rb+");
@@ -136,19 +138,20 @@ void criar_uf(FILE *f, int excluidos_uf) {
     char continuar;
     int total = 0;
     ufs = malloc(sizeof(struct UF *)*capacidade);
-    total = para_ram(f,ufs);
-    int temp = total;
-    if (excluidos_uf>1) {
-        for (int i = 0; i < total; i++) {
-            if (strcmp(ufs[i]->descricao, "EXCLUIDO")==0) {
-                total = i;
-                excluidos_uf--;
+
+    do {
+        total = para_ram(f,ufs);
+        int temp = total;
+        if (excluidos_uf>0) {
+            for (int i = 0; i < total; i++) {
+                if (strcmp(ufs[i]->descricao, "EXCLUIDO")==0) {
+                    total = i;
+                    excluidos_uf--;
+                }
             }
         }
-    }
 
-    int id = total;
-    do {
+        int id = total;
         ufs[total] = malloc(sizeof(struct UF));
         ufs[total]->codigo = id;
         do{
@@ -175,13 +178,12 @@ void criar_uf(FILE *f, int excluidos_uf) {
             ufs = realloc(ufs, sizeof(struct UF *)*(capacidade));
         }
         printf("continuar? ");
-        fflush(stdin);
         scanf(" %c", &continuar);
         getchar();
 
 
     }while (continuar == 's' || continuar == 'S');
-
+    int j;
 
 }
 

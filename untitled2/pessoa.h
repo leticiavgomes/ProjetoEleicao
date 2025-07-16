@@ -12,6 +12,10 @@ struct Pessoa{
     char endereco[255];
     char data_nasc[11];
 };
-struct Pessoa pessoa_inserir(char *cpf, char *titulo, char *nome, char *fone, char *endereco, char *data_nasc);
-struct Pessoa pessoa_ui_inserir();
+void criar_pessoa(FILE *f, int excluidos_pessoa, struct Pessoa **pessoas);
+int conferir_p(char *c, int max);
+int comparar_cpf(char *c, struct Pessoa **pessoas, int total);
+int comparar_titulo(char *c, struct Pessoa **pessoas, int total);
+int comparar_nome(char *c, struct Pessoa **pessoas, int total);
+int para_ram_p(FILE *f, struct Pessoa **pessoas);
 #endif //PESSOA_H
