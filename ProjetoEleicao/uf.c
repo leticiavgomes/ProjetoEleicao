@@ -1,3 +1,4 @@
+
 #include "uf.h"
 
 #define windows
@@ -8,6 +9,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "gerais.h"
+
+
 void editar(FILE *f, struct UF **ufs, int total) {
     int cod;
     printf("digite o codigo para editar: ");
@@ -15,19 +19,12 @@ void editar(FILE *f, struct UF **ufs, int total) {
     scanf("%d", &cod);
     for (int i = 0; i < total; ++i) {
         if (ufs[i]->codigo == cod) {
+            fflush(stdin);
             printf("achei! digite a nova sigla: \n");
             fflush(stdin);
             gets(ufs[i]->sigla);
             printf("digite a nova descricao: ");
-
-            #ifdef windows
             fflush(stdin);
-            #endif
-            #ifdef linux
-            fpurge(stdin);
-            #endif
-
-
             gets(ufs[i]->descricao);
             fseek(f, i*sizeof(struct UF), SEEK_SET);
             fwrite(ufs[i], sizeof(struct UF), 1, f);
@@ -46,13 +43,14 @@ struct UF **buscar_por_codigo(struct UF **ufs, int total, int codigo) {
             return ufs[i];
         }
     }
-    return -1;
+    printf("codigo nao encontrado!\n");
+    return NULL;
 }
 
 
 int conferir(char *c, int max) {
     if (c[0]=='\0') {
-        printf("digite ! \n");
+        printf("digite algo! \n");
         return 0;
     }
     if (strlen(c)>max) {
@@ -81,13 +79,14 @@ int comparar_char(char *c, struct UF **ufs, int total) {
         }
     }
     return 1;
-
 }
-FILE *abrir_arquivo(char path[]) {
+
+
+FILE *abrir_arquivo(char caminho[]) {
     FILE *f;
-    f = fopen(path, "rb+");
+    f = fopen(caminho, "rb+");
     if (f == NULL) {
-        f = fopen(path, "wb+");
+        f = fopen(caminho, "wb+");
 
     }
     return f;
@@ -116,22 +115,29 @@ void liberar_arquivo(struct UF **ufs, FILE *f) {
     fclose(f);
 }
 
-void criar_uf(FILE *f) {
+void criar_uf(FILE *f, int excluidos_uf) {
 
     struct UF **ufs;
     int capacidade = 30;
     char continuar;
     int total = 0;
     ufs = malloc(sizeof(struct UF *)*capacidade);
-    total = para_ram(f,ufs);
 
-    int id = total;
     do {
+        total = para_ram(f,ufs);
+        int temp = total;
+        if (excluidos_uf>0) {
+            for (int i = 0; i < total; i++) {
+                if (strcmp(ufs[i]->descricao, "EXCLUIDO")==0) {
+                    total = i;
+                    excluidos_uf--;
+                }
+            }
+        }
+
+        int id = total;
         ufs[total] = malloc(sizeof(struct UF));
         ufs[total]->codigo = id;
-        id++;
-
-
         do{
             printf("Insira a sigla: ");
             gets(ufs[total]->sigla);
@@ -146,9 +152,11 @@ void criar_uf(FILE *f) {
 
         }while (conferir(ufs[total]->descricao, 100) == 0);
 
-        fseek(f, 0, SEEK_END);
+        fseek(f, total*sizeof(struct UF), SEEK_SET);
         fwrite(ufs[total], sizeof(struct UF), 1, f);
+        fflush(f);
         total++;
+        total = temp;
 
         if (total == capacidade) {
             capacidade *= 2;
@@ -164,9 +172,8 @@ void criar_uf(FILE *f) {
 
 }
 
-void mostrar_ufs(FILE *f) {
+void mostrar_ufs(FILE *f, int capacidade) {
     struct UF **ufs;
-    int capacidade = 30;
     ufs = malloc(sizeof(struct UF *)*capacidade);
     int total = para_ram(f, ufs);
     printf("\n=== UF cadastradas ===\n");
@@ -177,4 +184,26 @@ void mostrar_ufs(FILE *f) {
         printf("Tamanho: %d\n\n", total);
     }
 
+}
+
+void excluir(FILE *f, struct UF **ufs) {
+    int cod;
+    fflush(stdin);
+    printf("digite o codigo para excluir: ");
+    scanf("%d", &cod);
+    strcpy(ufs[cod]->sigla, "--");
+    strcpy(ufs[cod]->descricao, "EXCLUIDO");
+    fseek(f, cod*sizeof(struct UF), SEEK_SET);
+    fwrite(ufs[cod], sizeof(struct UF), 1, f);
+    para_ram(f,ufs);
+    fflush(f);
+}
+
+int conta_uf_exc(struct UF **ufs, int total) {
+    int excluido = 0;
+    for (int i = 0; i < total; ++i) {
+        if (strcmp(ufs[i]->descricao,"EXCLUIDO")==0)
+            excluido++;
+    }
+    return excluido;
 }

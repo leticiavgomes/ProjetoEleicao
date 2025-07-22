@@ -1,3 +1,5 @@
+
+
 //
 // Created by SAMSUNG on 09/07/2025.
 //
@@ -12,11 +14,11 @@ struct UF{
     char descricao[100];
 };
 
-FILE *abrir_arquivo();
+FILE *abrir_arquivo(char caminho[]);
 int para_ram(FILE *f, struct UF **ufs);
 void liberar_arquivo(struct UF **ufs, FILE *f);
-void criar_uf(FILE *f);
-void mostrar_ufs(FILE *f);
+void criar_uf(FILE *f, int excluidos_uf);
+void mostrar_ufs(FILE *f, int capacidade);
 int conferir(char *c, int max);
 int comparar_int(int a, int total, struct UF **ufs);
 int comparar_char(char *c,struct UF **ufs, int total);
@@ -24,5 +26,7 @@ int posicao(FILE *f, struct UF **ufs, int total, int codigo);
 int buscar_posicao_por_codigo(FILE *f, int codigo_procurado, struct UF **ufs);
 void editar(FILE *f, struct UF **ufs, int total);
 struct UF **buscar_por_codigo(struct UF **ufs, int total, int codigo);
-struct UF **iniciaUF(FILE *f);
+void excluir(FILE *f, struct UF **ufs);
+int conta_uf_exc(struct UF **ufs, int total);
+
 #endif //UF_H
