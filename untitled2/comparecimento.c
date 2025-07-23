@@ -18,7 +18,7 @@ void inserir_comparecimento(FILE *cmp, int ano_e, int cod_uf, struct comparecime
     comparecimentos[pos]->codigo_uf = cod_uf;
 
     do{
-        printf("digite o CPF: ");
+        printf("Digite o CPF: ");
         fflush(stdin);
         gets(comparecimentos[pos]->cpf);
 
@@ -33,11 +33,10 @@ int mostrar_votos_comparecimento(FILE *cmp, struct comparecimento **comparecimen
     int total = para_ram_cmp(cmp, comparecimentos);
     int qtd_cmp = 0;
     if (flag == 1) {
-        printf("digite o ano: ");
+        printf("Digite o ano: ");
         scanf("%d", &ano_e);
-        printf("digite o codigo da uf: ");
+        printf("Digite o codigo da uf: ");
         scanf("%d", &uf_e);
-        printf("Tamanho: %d\n\n", total);
     }
 
     for (int i = 0; i < total; i++) {
@@ -53,7 +52,7 @@ int mostrar_votos_comparecimento(FILE *cmp, struct comparecimento **comparecimen
             }
         }
     }
-    printf("a eleicao de %d da UF %d tem %d comparecimento(s)\n",ano_e,uf_e, qtd_cmp);
+    printf("A eleicao de %d da UF %d tem %d comparecimento(s)\n",ano_e,uf_e, qtd_cmp);
     return qtd_cmp;
 }
 
@@ -126,8 +125,11 @@ struct comparecimento **inicia_comparecimento(int capacidade, FILE *cmp, int qtd
     struct comparecimento **comparecimentos;
     comparecimentos = malloc(sizeof(struct comparecimento*) * capacidade);
     fseek(cmp, 0, SEEK_END);
-    if (qtd_comparecimento>=capacidade){
+    if (qtd_comparecimento+10>=capacidade){
+        do{
         comparecimentos = realloc(comparecimentos, sizeof(struct comparecimento*)*capacidade * 2);
+        capacidade = capacidade *2;
+        }while (qtd_comparecimento+10>=capacidade);
     }
     for (int i = 0; i < qtd_comparecimento; i++) {
         comparecimentos[i] = malloc(sizeof(struct comparecimento));

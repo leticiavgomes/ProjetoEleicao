@@ -214,8 +214,11 @@ struct Eleicao **inicia_eleicoes(int capacidade, FILE *e, int qtd_eleicoes) {
     struct Eleicao **eleicoes;
     eleicoes = malloc(sizeof(struct Eleicao*) * capacidade);
     fseek(e, 0, SEEK_END);
-    if(qtd_eleicoes>=capacidade){
+    if(qtd_eleicoes+5>=capacidade){
+        do{
         eleicoes = realloc(eleicoes, sizeof(struct Eleicao*)*capacidade * 2);
+            capacidade = capacidade *2;
+        }while (qtd_eleicoes+5>=capacidade);
     }
     for (int i = 0; i < qtd_eleicoes; i++) {
         eleicoes[i] = malloc(sizeof(struct Eleicao));

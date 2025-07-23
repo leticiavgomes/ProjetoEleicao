@@ -209,9 +209,11 @@ struct UF **inicia_ufs(int capacidade, FILE *f, int qtd_ufs) {
 
     struct UF **ufs;
     ufs = malloc(sizeof(struct UF*) * capacidade);
-
-    if(qtd_ufs+10>=capacidade){
-        ufs = realloc(ufs, sizeof(struct UF*)*capacidade * 2);
+    if(qtd_ufs+10>=capacidade) {
+        do{
+            ufs = realloc(ufs, sizeof(struct UF*)*capacidade * 2);
+            capacidade = capacidade *2;
+        }while (qtd_ufs+5>=capacidade);
     }
     for (int i = 0; i < qtd_ufs; i++) {
         fseek(f, 0, SEEK_END);

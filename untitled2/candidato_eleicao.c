@@ -31,24 +31,25 @@ void criar_candidato_eleicao(FILE *c, int excluidos_candidatos, struct  Eleicao 
             }
         }
         do {
-            printf("Insira o ano: ");
-            fflush(stdin);
-            scanf("%d", &candidatos[pos]->ano);
-            fflush(stdin);
-            printf("Insira o codigo da uf: ");
-            scanf("%d", &candidatos[pos]->codigo_uf);
-        }while (confere_ano_uf(eleicoes, candidatos[pos]->ano, candidatos[pos]->codigo_uf, total_eleicoes, pos)!=2);
-        do{
-            printf("insira um cpf: ");
-            fflush(stdin);
-            gets(candidatos[pos]->cpf);
-        }while (conferir_cpf(pessoas, total_pessoas, candidatos[pos]->cpf)==0);
+            do {
+                printf("Insira o ano: ");
+                fflush(stdin);
+                scanf("%d", &candidatos[pos]->ano);
+                fflush(stdin);
+                printf("Insira o codigo da uf: ");
+                scanf("%d", &candidatos[pos]->codigo_uf);
+            }while (confere_ano_uf(eleicoes, candidatos[pos]->ano, candidatos[pos]->codigo_uf, total_eleicoes, -1)!=2);
+            do{
+                printf("Insira um cpf: ");
+                fflush(stdin);
+                gets(candidatos[pos]->cpf);
+            }while (conferir_cpf(pessoas, total_pessoas, candidatos[pos]->cpf)==0);
+        }while (compara_cand(candidatos, total, candidatos[pos]->ano, candidatos[pos]->codigo_uf, candidatos[pos]->cpf)==1);
         do {
-            printf("digite o numero: ");
+            printf("Digite o numero: ");
             fflush(stdin);
             scanf("%d", &candidatos[pos]->numero);
         }while (candidatos[pos]->numero==0);
-
         fseek(c, pos*sizeof(struct candidato_eleicao), SEEK_SET);
         fwrite(candidatos[pos], sizeof(struct candidato_eleicao), 1, c);
         if (pos==total) {
@@ -80,11 +81,10 @@ void excluir_c(FILE *c, struct candidato_eleicao **candidatos) {
         if (candidatos[i]->ano == ano_e && candidatos[i]->codigo_uf == cod_uf && strcmp(candidatos[i]->cpf, cpf_p)==0) {
             printf("achei! \n");
             strcpy(candidatos[i]->cpf, "EXCLUIDO");
-            candidatos[i]->ano = 0000;
+            candidatos[i]->ano = 0;
             candidatos[i]->codigo_uf = -1;
             fseek(c, i*sizeof(struct candidato_eleicao), SEEK_SET);
             fwrite(candidatos[i], sizeof(struct candidato_eleicao), 1, c);
-            para_ram_c(c, candidatos);
             fflush(c);
             break;
         }
@@ -107,7 +107,6 @@ void mostrar_candidatos_ord(FILE *c, struct candidato_eleicao **candidatos) {
     int ano_e;
     printf("digite o ano: ");
     scanf("%d", &ano_e);
-    printf("Tamanho: %d\n\n", total);
         printf("\n=== Candidatos cadastrados ===\n");
         for (int i = 0; i < total; i++) {
             if(candidatos[i]->ano==ano_e){
@@ -122,9 +121,9 @@ void mostrar_candidatos_ua(FILE *c, struct candidato_eleicao **candidatos) {
     int total = para_ram_c(c, candidatos);
     int ano_e;
     int uf_e;
-    printf("digite o ano: ");
+    printf("Digite o ano: ");
     scanf("%d", &ano_e);
-    printf("digite o codigo da uf: ");
+    printf("Digite o codigo da uf: ");
     scanf("%d", &uf_e);
     printf("\n=== Candidatos cadastrados em %d na UF %d ===\n", ano_e, uf_e);
     for (int i = 0; i < total; i++)
@@ -142,7 +141,7 @@ int conferir_cpf(struct Pessoa **pessoas, int total, char *achar_cpf) {
         return 1;
         }
     }
-    printf("cpf nao encontrado!\n");
+    printf("CPF nao encontrado!\n");
     return 0;
 }
 
@@ -152,8 +151,11 @@ struct candidato_eleicao **inicia_candidatos(int capacidade, FILE *c, int qtd_ca
     struct candidato_eleicao **candidatos;
     candidatos = malloc(sizeof(struct candidato_eleicao*) * capacidade);
     fseek(c, 0, SEEK_END);
-    if (qtd_candidatos>=capacidade){
+    if (qtd_candidatos+10>=capacidade){
+        do{
         candidatos = realloc(candidatos, sizeof(struct candidato_eleicao*)*capacidade * 2);
+            capacidade = capacidade *2;
+        }while (qtd_candidatos+10>=capacidade);
     }
     for (int i = 0; i < qtd_candidatos; i++) {
         candidatos[i] = malloc(sizeof(struct candidato_eleicao));
@@ -186,11 +188,11 @@ int conferir_numero(FILE *c, struct candidato_eleicao **candidatos, int total, i
     para_ram_c(c, candidatos);
     for (int i = 0; i < total; i++) {
         if (candidatos[i]->numero == achar_num && candidatos[i]->ano == ano_e && candidatos[i]->codigo_uf==cod_uf) {
-            printf("Numero está nos registros!\n ");
+            printf("Numero esta nos registros!\n ");
             return 1;
         }
     }
-    printf("numero novo!\n");
+    printf("Numero novo/Nao cadastrado!\n");
     return 0;
 }
 
@@ -201,4 +203,14 @@ void liberar_arquivo_c(struct candidato_eleicao **candidatos, FILE *c, int qtd_c
     }
     free(candidatos);
     fclose(c);
+}
+
+int compara_cand(struct candidato_eleicao **candidatos, int qtd_candidatos, int ano_e, int cod_uf, char *cpf) {
+    for (int i = 0; i < qtd_candidatos; i++) {
+        if ((strcmp(candidatos[i]->cpf, cpf)==0) && candidatos[i]->ano==ano_e && candidatos[i]->codigo_uf==cod_uf) {
+            printf("O candidato de CPF %d, com numero %d ja existe no ano %d! \n\n", cpf,cod_uf,ano_e);
+            return 1;
+        }
+    }
+    return 0;
 }

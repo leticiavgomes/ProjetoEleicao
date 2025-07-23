@@ -221,12 +221,14 @@ int conta_pessoa_exc(struct Pessoa **pessoas, int total) {
 
 
 struct Pessoa **inicia_pessoa(int capacidade, FILE *p, int qtd_pessoas) {
-
     struct Pessoa **pessoas;
     pessoas = malloc(sizeof(struct Pessoa*) * capacidade);
     fseek(p, 0, SEEK_END);
-    if(qtd_pessoas+5>=capacidade){
-        pessoas = realloc(pessoas, sizeof(struct Pessoa*)*capacidade * 2);
+    if(qtd_pessoas+5>=capacidade) {
+        do {
+            pessoas = realloc(pessoas, sizeof(struct Pessoa*)* capacidade * 2);
+            capacidade = capacidade *2;
+        }while (qtd_pessoas+5>=capacidade);
     }
     for (int i = 0; i < qtd_pessoas; i++) {
         pessoas[i] = malloc(sizeof(struct Pessoa));

@@ -36,7 +36,8 @@ enum {
     mostra_voto_candidato,
     contar_votos,
     mostrar_comparecimento,
-    mostrar_comparecimento_uf
+    mostrar_comparecimento_uf,
+    mostrar_resultados
 };
 
 int size(char path[], int sizeof_type);
@@ -216,6 +217,9 @@ struct comparecimento **comparecimentos;
             case mostrar_comparecimento_uf:
                 mostrar_votos_comparecimento(cmp, comparecimentos, 1, 0,0);
                 break;
+            case mostrar_resultados:
+                resultados(candidatos, qtd_candidatos);
+                break;
         }
 
     }while (opcao != 30);
@@ -225,8 +229,6 @@ struct comparecimento **comparecimentos;
     liberar_arquivo_c(candidatos, c, qtd_candidatos);
     liberar_arquivo_v(votos, v, qtd_votos);
     liberar_arquivo_cmp(comparecimentos, cmp, qtd_cmp);
-
-
 
     return 0;
 }

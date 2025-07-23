@@ -29,4 +29,5 @@ int conta_candidato_exc(struct candidato_eleicao **candidatos, int total);
 int conferir_numero(FILE *c, struct candidato_eleicao **candidatos, int total, int achar_num, int ano_e, int cod_uf);
 void criar_candidato2(FILE *c, int excluidos_candidatos, struct  Eleicao **eleicoes, struct UF **ufs, struct Pessoa **pessoas, struct candidato_eleicao **candidatos, FILE *f, FILE *e, FILE *p);
 void liberar_arquivo_c(struct candidato_eleicao **candidatos, FILE *c, int qtd_candidatos);
+int compara_cand(struct candidato_eleicao **candidatos, int qtd_candidatos, int ano_e, int cod_uf, char *cpf);
 #endif //CANDIDATO_ELEICAO_H
