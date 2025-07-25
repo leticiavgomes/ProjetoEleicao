@@ -1,0 +1,3 @@
+C:/Users/SAMSUNG/eclipse-workspace1/.spedcontabil/Downloads/ProjetoFinal10/ProjetoFinal/cmake-build-main/CMakeFiles/untitled2.dir
+C:/Users/SAMSUNG/eclipse-workspace1/.spedcontabil/Downloads/ProjetoFinal10/ProjetoFinal/cmake-build-main/CMakeFiles/edit_cache.dir
+C:/Users/SAMSUNG/eclipse-workspace1/.spedcontabil/Downloads/ProjetoFinal10/ProjetoFinal/cmake-build-main/CMakeFiles/rebuild_cache.dir
